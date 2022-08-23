@@ -1,17 +1,26 @@
 # Mobilenet example for WASI-NN
 
-This package is a high-level Rust bindings for [wasi-nn] example of Mobilenet.
+This is a running record of the official example.
 
 [wasi-nn]: https://github.com/WebAssembly/wasi-nn
 
-## Dependencies
 
-This crate depends on the `wasi-nn` in the `Cargo.toml`:
-
-```toml
-[dependencies]
-wasi-nn = "0.1.0"
+## Runtime environment
 ```
+Linux 5be9f30346ac 5.4.0-47-generic #51-Ubuntu SMP Fri Sep 4 19:50:52 UTC 2020 x86_64 x86_64 x86_64 GNU/Linux
+```
+
+## Preparatory work
+
+[This guide](https://wasmedge.org/book/en/dev/rust/wasinn.html) for setting up the working environment, however, there are some commands and environment Settings that require additional attention.
+
+- When running the container here I recommend mapping '*/opt* ' directory to the container '*/opt* ' directory, like *-v /opt:/opt*, so that cmake can find **InferenceEngineConfig.cmake** and **inferenceengine-config.cmake**.
+  
+- Add option **-DInferenceEngine_DIR=\
+  <PATH/TO/YOUT/OPENVINO/deployment_tools/inference_engine/share/** 
+   when you code *cmake -DCMAKE_BUILD_TYPE=Release -DWASMEDGE_PLUGIN_WASI_NN_BACKEND="OpenVINO" .. && make -j*
+
+
 
 ## Build
 
@@ -38,26 +47,22 @@ First download the fixture files with the script:
 
 it will also download a testing image `input.jpg`
 
-![](https://github.com/bytecodealliance/wasi-nn/raw/main/rust/images/1.jpg)
+![](https://github.com/bytecodealliance/wasi-nn/raw/main/rust/images/2.jpg)
 
 And execute the WASM with the `wasmedge` with OpenVINO supporting:
 
 ```bash
-wasmedge --dir .:. wasmedge-wasinn-example-mobilenet-image.wasm mobilenet.xml mobilenet.bin input.jpg
+wasmedge --dir .:. rust/target/wasm32-wasi/release/wasmedge-wasinn-example-mobilenet-image.wasm model/mobilenet.xml model/mobilenet.bin model/input.jpg
 ```
 
 You will get the output:
 
-```bash
-Read graph XML, size in bytes: 143525
-Read graph weights, size in bytes: 13956476
-Loaded graph into wasi-nn with ID: 0
-Created wasi-nn execution context with ID: 0
-Read input tensor, size in bytes: 602112
-Executed graph inference
-   1.) [954](0.9789)banana
-   2.) [940](0.0074)spaghetti squash
-   3.) [951](0.0014)lemon
-   4.) [969](0.0005)eggnog
-   5.) [942](0.0005)butternut squash
-```
+### openvino-mobilenet-raw
+
+![result](source/result.png)
+
+<br>
+
+### openvino-mobilenet-image
+
+![result](source/result_image.jpg)
